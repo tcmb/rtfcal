@@ -4,7 +4,7 @@ beautifulsoup4==4.6.0
 bs4==0.0.1
 decorator==4.1.2
 enum34==1.1.6
-icalendar==3.11.7
+icalendar==4.0.0
 ipdb==0.10.3
 ipython==5.5.0
 ipython-genutils==0.2.0
