@@ -59,7 +59,9 @@ for e in results:
 
     cal.add_component(event)
 
-    print(cal)
+
+with open('rtfcal.ics', 'w') as cal_file:
+    cal_file.write(cal.to_ical())
 
 
 # multi-page results
