@@ -10,10 +10,6 @@ def pretty_print(rtf_dict):
     print unicode(rtf_dict) + '\n'
 
 
-def string_format(str):
-    return str.strip()
-
-
 def get_date_and_distance(cell):
     day_and_date = cell.contents[0]
     # Not sure how to set all day events, and event visibility is bad when it starts at midnight,
