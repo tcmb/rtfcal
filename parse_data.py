@@ -29,7 +29,7 @@ def create_description(rtf_attributes):
     if rtf_attributes.get('rtf_club'):
         description += '\n' + rtf_attributes['rtf_club']
     if rtf_attributes.get('rtf_lengths'):
-        description += '\n' + rtf_attributes['rtf_lengths']
+        description += '\n' + rtf_attributes['rtf_lengths'] + 'km'
     return description
 
 
@@ -65,8 +65,6 @@ def html_to_ical(html):
     """
     TODO: multi-page results
     TODO: add reminder to events
-    TODO: Add URI
-    TODO: Add lengths in description
     """
 
     cal = Calendar()
