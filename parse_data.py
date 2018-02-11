@@ -57,56 +57,69 @@ def add_timezone(cal):
     return cal
 
 
+def create_calendar():
+    cal = Calendar()
+    cal.add('prodid', '-//RTF Calendar//rtfcal.io//')
+    cal.add('version', '2.0')
+    cal = add_timezone(cal)
+    return cal
+
+
+def add_alarm(event):
+    alarm = Alarm()
+    alarm.add('action', 'DISPLAY')
+    alert_time = timedelta(days=-1)
+    alarm.add('trigger', alert_time)
+    event.add_component(alarm)
+    return event
+
+
+def create_event(e):
+
+    rtf_link = e.attrs.get('href')
+    rtf_cells = e.find_all('div', class_='zelle')
+
+    date_and_time, dist_from_home = get_date_and_distance(rtf_cells[1])
+
+    rtf_attributes = {
+        'rtf_type': rtf_cells[0].find('div', class_='tooltip').string,
+        'rtf_date': date_and_time,
+        'rtf_dist_from_home': dist_from_home,
+        'rtf_name': rtf_cells[2].string if rtf_cells[2] else '',
+        'rtf_lengths': rtf_cells[3].string if rtf_cells[3] else '',
+        'rtf_club': rtf_cells[4].string if rtf_cells[4] else '',
+        'rtf_link': rtf_link
+    }
+
+    event = Event()
+    event.add('summary', rtf_attributes['rtf_name'])
+    event.add('uid', uuid4())
+    event.add('dtstart', date_and_time)
+    event.add('dtend', date_and_time + timedelta(hours=1))
+    event.add('dtstamp', datetime.now())
+    event.add('url', rtf_attributes['rtf_link'])
+    event.add('description', create_description(rtf_attributes))
+
+    add_alarm(event)
+
+    return event
+
+
 def html_to_ical(html):
     """
     TODO: multi-page results
     """
 
-    cal = Calendar()
-    cal.add('prodid', '-//RTF Calendar//rtfcal.io//')
-    cal.add('version', '2.0')
-    cal = add_timezone(cal)
-
     soup = BeautifulSoup(html, 'lxml')
     results = soup.find_all('a', class_='terminlink')
 
+    cal = create_calendar()
+
     for e in results:
-
-        rtf_link = e.attrs.get('href')
-        rtf_cells = e.find_all('div', class_='zelle')
-
-        date_and_time, dist_from_home = get_date_and_distance(rtf_cells[1])
-
-        rtf_attributes = {
-            'rtf_type': rtf_cells[0].find('div', class_='tooltip').string,
-            'rtf_date': date_and_time,
-            'rtf_dist_from_home': dist_from_home,
-            'rtf_name': rtf_cells[2].string if rtf_cells[2] else '',
-            'rtf_lengths': rtf_cells[3].string if rtf_cells[3] else '',
-            'rtf_club': rtf_cells[4].string if rtf_cells[4] else '',
-            'rtf_link': rtf_link
-        }
-
-        pretty_print(rtf_attributes)
-
-        event = Event()
-        event.add('summary', rtf_attributes['rtf_name'])
-        event.add('uid', uuid4())
-        event.add('dtstart', date_and_time)
-        event.add('dtend', date_and_time + timedelta(hours=1))
-        event.add('dtstamp', datetime.now())
-        event.add('url', rtf_attributes['rtf_link'])
-        event.add('description', create_description(rtf_attributes))
-
-        alarm = Alarm()
-        alarm.add('action', 'DISPLAY')
-        alert_time = timedelta(days = -1)
-        alarm.add('trigger', alert_time)
-        event.add_component(alarm)
-
+        event = create_event(e)
         cal.add_component(event)
 
-    print cal.to_ical()
+    # print cal.to_ical()
 
     with open('rtfcal.ics', 'w') as cal_file:
         cal_file.write(cal.to_ical())
