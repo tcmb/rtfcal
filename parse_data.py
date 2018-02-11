@@ -23,6 +23,16 @@ def get_date_and_distance(cell):
     return tz_aware_date_and_time, dist_from_home[1:-1]
 
 
+def create_description(rtf_attributes):
+    description = rtf_attributes.get('rtf_type') + '\\n'
+    if rtf_attributes.get('rtf_club'):
+        description = rtf_attributes['rtf_club'] + '\\n'
+    if rtf_attributes.get('rtf_lengths'):
+        description = description + rtf_attributes['rtf_lengths'] + '\\n'
+    description += rtf_attributes['rtf_link']
+    return description
+
+
 def html_to_ical(html):
     """
     TODO: multi-page results
@@ -49,9 +59,9 @@ def html_to_ical(html):
             'rtf_type': rtf_cells[0].find('div', class_='tooltip').string,
             'rtf_date': date_and_time,
             'rtf_dist_from_home': dist_from_home,
-            'rtf_name': rtf_cells[2].string,
-            'rtf_lengths': rtf_cells[3].string,
-            'rtf_club': rtf_cells[4].string,
+            'rtf_name': rtf_cells[2].string if rtf_cells[2] else '',
+            'rtf_lengths': rtf_cells[3].string if rtf_cells[3] else '',
+            'rtf_club': rtf_cells[4].string if rtf_cells[4] else '',
             'rtf_link': rtf_link
         }
 
@@ -61,8 +71,12 @@ def html_to_ical(html):
         event.add('summary', rtf_attributes['rtf_name'])
         event.add('dtstart', date_and_time)
         event.add('dtend', date_and_time + timedelta(hours=1))
+        event.add('url', rtf_attributes['rtf_link'])
+        event.add('description', create_description(rtf_attributes))
 
         cal.add_component(event)
+
+    print cal.to_ical()
 
     with open('rtfcal.ics', 'w') as cal_file:
         cal_file.write(cal.to_ical())
