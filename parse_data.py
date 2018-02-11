@@ -25,11 +25,11 @@ def get_date_and_distance(cell):
 
 
 def create_description(rtf_attributes):
-    description = rtf_attributes.get('rtf_type') + '\\n'
+    description = rtf_attributes.get('rtf_type')
     if rtf_attributes.get('rtf_club'):
-        description = rtf_attributes['rtf_club'] + '\\n'
+        description += '\n' + rtf_attributes['rtf_club']
     if rtf_attributes.get('rtf_lengths'):
-        description = description + rtf_attributes['rtf_lengths'] + '\\n'
+        description += '\n' + rtf_attributes['rtf_lengths']
     return description
 
 
