@@ -3,6 +3,7 @@ from dateparser import parse
 from icalendar import Calendar, Event
 from pytz import timezone
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 
 def pretty_print(rtf_dict):
@@ -68,6 +69,7 @@ def html_to_ical(html):
 
         event = Event()
         event.add('summary', rtf_attributes['rtf_name'])
+        event.add('uid', uuid4())
         event.add('dtstart', date_and_time)
         event.add('dtend', date_and_time + timedelta(hours=1))
         event.add('dtstamp', datetime.now())
