@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from dateparser import parse
-from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard
+from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard, Alarm
 from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -60,7 +60,6 @@ def add_timezone(cal):
 def html_to_ical(html):
     """
     TODO: multi-page results
-    TODO: add reminder to events
     """
 
     cal = Calendar()
@@ -98,6 +97,12 @@ def html_to_ical(html):
         event.add('dtstamp', datetime.now())
         event.add('url', rtf_attributes['rtf_link'])
         event.add('description', create_description(rtf_attributes))
+
+        alarm = Alarm()
+        alarm.add('action', 'DISPLAY')
+        alert_time = timedelta(days = -1)
+        alarm.add('trigger', alert_time)
+        event.add_component(alarm)
 
         cal.add_component(event)
 
