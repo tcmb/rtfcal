@@ -4,6 +4,7 @@ from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStand
 from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
+import re
 
 
 def pretty_print(rtf_dict):
@@ -105,6 +106,11 @@ def create_event(e):
     return event
 
 
+def has_more_results(tag):
+    pattern = re.compile('Weitere Ergebnisse.*')
+    return tag.string and pattern.match(tag.string)
+
+
 def html_to_ical(html):
     """
     TODO: multi-page results
@@ -118,6 +124,12 @@ def html_to_ical(html):
     for e in results:
         event = create_event(e)
         cal.add_component(event)
+
+    # check for 'Weitere Ergebnisse: ' Element and get hrefs which are right siblings of it
+    more_results_element = soup.find(has_more_results)
+    if more_results_element:
+        # get page with same parameters but with added lstart=len(results)
+        pass
 
     # print cal.to_ical()
 
