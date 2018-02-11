@@ -4,6 +4,7 @@ from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStand
 from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
+from copy import deepcopy
 import re
 import requests
 
@@ -29,7 +30,10 @@ headers = {
 
 
 def get_rtfs(params=None):
-    params = params or default_params
+    # copy or deepcopy shouldn't make a difference for current state of default_params, but you never know what
+    # might go in there later.
+    request_params = deepcopy(default_params)
+    request_params.update(params or {})
     response = requests.get(BASE_URL, headers=headers, params=params)
     return response.content
 
