@@ -15,7 +15,9 @@ def string_format(str):
 
 def get_date_and_distance(cell):
     day_and_date = cell.contents[0]
-    date_and_time = parse(day_and_date)
+    # Not sure how to set all day events, and event visibility is bad when it starts at midnight,
+    # so we let every RTF start at 8am
+    date_and_time = parse(day_and_date).replace(hour=8)
     tz_aware_date_and_time = date_and_time.replace(tzinfo=timezone('Europe/Berlin'))
     dist_from_home = cell.contents[2]
     return tz_aware_date_and_time, dist_from_home[1:-1]
@@ -27,7 +29,6 @@ def html_to_ical(html):
     TODO: add reminder to events
     TODO: Add URI
     TODO: Add lengths in description
-    TODO: Make events start at 8am for better visibility in calendar
     """
 
     cal = Calendar()
