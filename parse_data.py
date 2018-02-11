@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from dateparser import parse
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard
 from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -33,6 +33,34 @@ def create_description(rtf_attributes):
     return description
 
 
+def add_timezone(cal):
+    """
+    copy-pasted from icalendar/tests/test_timezoned.py
+    """
+    tzc = Timezone()
+    tzc.add('tzid', 'Europe/Berlin')
+    tzc.add('x-lic-location', 'Europe/Berlin')
+
+    tzs = TimezoneStandard()
+    tzs.add('tzname', 'CET')
+    tzs.add('dtstart', datetime(1970, 10, 25, 3, 0, 0))
+    tzs.add('rrule', {'freq': 'yearly', 'bymonth': 10, 'byday': '-1su'})
+    tzs.add('TZOFFSETFROM', timedelta(hours=2))
+    tzs.add('TZOFFSETTO', timedelta(hours=1))
+
+    tzd = TimezoneDaylight()
+    tzd.add('tzname', 'CEST')
+    tzd.add('dtstart', datetime(1970, 3, 29, 2, 0, 0))
+    tzs.add('rrule', {'freq': 'yearly', 'bymonth': 3, 'byday': '-1su'})
+    tzd.add('TZOFFSETFROM', timedelta(hours=1))
+    tzd.add('TZOFFSETTO', timedelta(hours=2))
+
+    tzc.add_component(tzs)
+    tzc.add_component(tzd)
+    cal.add_component(tzc)
+    return cal
+
+
 def html_to_ical(html):
     """
     TODO: multi-page results
@@ -44,6 +72,7 @@ def html_to_ical(html):
     cal = Calendar()
     cal.add('prodid', '-//RTF Calendar//rtfcal.io//')
     cal.add('version', '2.0')
+    cal = add_timezone(cal)
 
     soup = BeautifulSoup(html, 'lxml')
     results = soup.find_all('a', class_='terminlink')
