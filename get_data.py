@@ -22,4 +22,5 @@ headers = {
 
 def get_rtfs(params=None):
     params = params or default_params
-    return requests.get(BASE_URL, params=params)
+    response = requests.get(BASE_URL, headers=headers, params=params)
+    return response.content
