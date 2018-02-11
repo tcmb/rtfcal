@@ -25,6 +25,9 @@ def html_to_ical(html):
     """
     TODO: multi-page results
     TODO: add reminder to events
+    TODO: Add URI
+    TODO: Add lengths in description
+    TODO: Make events start at 8am for better visibility in calendar
     """
 
     cal = Calendar()
