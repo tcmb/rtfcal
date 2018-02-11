@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from dateparser import parse
 from icalendar import Calendar, Event
 from pytz import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 def pretty_print(rtf_dict):
@@ -29,7 +29,6 @@ def create_description(rtf_attributes):
         description = rtf_attributes['rtf_club'] + '\\n'
     if rtf_attributes.get('rtf_lengths'):
         description = description + rtf_attributes['rtf_lengths'] + '\\n'
-    description += rtf_attributes['rtf_link']
     return description
 
 
@@ -43,7 +42,7 @@ def html_to_ical(html):
 
     cal = Calendar()
     cal.add('prodid', '-//RTF Calendar//rtfcal.io//')
-    cal.add('version', '1.0')
+    cal.add('version', '2.0')
 
     soup = BeautifulSoup(html, 'lxml')
     results = soup.find_all('a', class_='terminlink')
@@ -71,6 +70,7 @@ def html_to_ical(html):
         event.add('summary', rtf_attributes['rtf_name'])
         event.add('dtstart', date_and_time)
         event.add('dtend', date_and_time + timedelta(hours=1))
+        event.add('dtstamp', datetime.now())
         event.add('url', rtf_attributes['rtf_link'])
         event.add('description', create_description(rtf_attributes))
 
