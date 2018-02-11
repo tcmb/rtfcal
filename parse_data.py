@@ -5,6 +5,33 @@ from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
 import re
+import requests
+
+
+BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
+
+default_params = {
+    'startdate': '01.01.2018',
+    'enddate': '31.12.2018',
+    'umkreis': '20', # preselections: 20, 50, 100, 200, 400
+    'plz': '12055',
+    'go': 'Termine+suchen',
+    # 'art': '-1',
+    # 'titel': '',
+    # 'lv': '-1',
+    # 'tid': '',
+    # 'formproof': '',
+}
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+}
+
+
+def get_rtfs(params=None):
+    params = params or default_params
+    response = requests.get(BASE_URL, headers=headers, params=params)
+    return response.content
 
 
 def pretty_print(rtf_dict):
@@ -135,3 +162,15 @@ def html_to_ical(html):
 
     with open('rtfcal.ics', 'w') as cal_file:
         cal_file.write(cal.to_ical())
+
+
+if __name__ == '__main__':
+    from sys import argv
+    if (len(argv) < 2) or not ('-l' in argv or '-r' in argv):
+        print 'Please say -l or -r for local or remote data source.'
+    elif argv[1] == '-l':
+        with open("Termine_long.html") as fp:
+            html_to_ical(fp)
+    elif argv[1] == '-r':
+        from get_data import get_rtfs
+        html_to_ical(get_rtfs())
