@@ -172,5 +172,4 @@ if __name__ == '__main__':
         with open("Termine_long.html") as fp:
             html_to_ical(fp)
     elif argv[1] == '-r':
-        from get_data import get_rtfs
         html_to_ical(get_rtfs())
