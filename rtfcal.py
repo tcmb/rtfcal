@@ -34,7 +34,7 @@ def get_rtfs(params=None):
     # might go in there later.
     request_params = deepcopy(default_params)
     request_params.update(params or {})
-    response = requests.get(BASE_URL, headers=headers, params=params)
+    response = requests.get(BASE_URL, headers=headers, params=request_params)
     return response.content
 
 
