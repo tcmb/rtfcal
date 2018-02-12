@@ -4,6 +4,7 @@ beautifulsoup4==4.6.0
 bs4==0.0.1
 decorator==4.1.2
 enum34==1.1.6
+Flask==0.12.1
 icalendar==4.0.0
 ipdb==0.10.3
 ipython==5.5.0

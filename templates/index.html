@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>RTFCal</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113525315-2"></script>
+    <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'UA-113525315-2');
+
+
+    </script>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="static/css/rtfcal.css" rel="stylesheet"/>
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+
+<div id="outer">
+    <div id="title">
+        <h1>RTFCal: RTF Termine als iCalendar export</h1>
+    </div>
+    <div id="param_form">
+        <h2>Selektiere Parameter</h2>
+        <form action="/ical" method="post">
+            <div>
+                <input type="radio" name="activity_type" id="activity_type_ride" value="Ride" checked>
+                <label for="activity_type_ride">Ride</label>
+
+                <input type="radio" name="activity_type" id="activity_type_run" value="Run">
+                <label for="activity_type_run">Run</label>
+            </div>
+            <div>
+                <label for="min_activity_length">Minimum activity length (km, 1km = 1.6 miles)</label>
+                <input name="min_activity_length" id="min_activity_length" value="100"/>
+            </div>
+            <div>
+                <label for="max_activity_length">Maximum activity length (0 for unlimited, in km)</label>
+                <input name="max_activity_length" id="max_activity_length" value="0"/>
+            </div>
+            <div>
+                <label for="home_loc_lat">Home location latitude</label>
+                <input name="home_loc_lat" id="home_loc_lat" value="52.47"/><i>Click in the map to set longitude and
+                latitude!</i>
+            </div>
+            <div>
+                <label for="home_loc_lon">Home location longitude</label>
+                <input name="home_loc_lon" id="home_loc_lon" value="13.45"/>
+            </div>
+            <div>
+                <label for="max_dist_from_home">Max km from home for start/stop</label>
+                <input name="max_dist_from_home" id="max_dist_from_home" value="10"/>
+            </div>
+            <div>
+                <label for="max_results">Maximum number of results</label>
+                <input name="max_results" id="max_results" value="10"/>
+            </div>
+            <div>
+                <button>Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="intro">
+    <h3>Was ist das?</h3>
+    <p>RTFCal Blubb</p>
+</div>
+{% endblock %}
+</body>
+</html>
