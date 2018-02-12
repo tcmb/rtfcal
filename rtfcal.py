@@ -14,7 +14,7 @@ BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 default_params = {
     'startdate': '01.01.2018',
     'enddate': '31.12.2018',
-    'umkreis': '20', # preselections: 20, 50, 100, 200, 400
+    'umkreis': '200',  # preselections: 20, 50, 100, 200, 400
     'plz': '12055',
     'go': 'Termine+suchen',
     # 'art': '-1',
@@ -143,27 +143,27 @@ def has_more_results(tag):
     return tag.string and pattern.match(tag.string)
 
 
-def html_to_ical(html):
-    """
-    TODO: multi-page results
-    """
-
+def html_to_result_list(html):
     soup = BeautifulSoup(html, 'lxml')
-    results = soup.find_all('a', class_='terminlink')
+    return soup.find_all('a', class_='terminlink')
 
+
+def results_to_ical(result_list):
+
+    lstart = 0
     cal = create_calendar()
 
-    for e in results:
-        event = create_event(e)
-        cal.add_component(event)
+    while result_list:
 
-    # check for 'Weitere Ergebnisse: ' Element and get hrefs which are right siblings of it
-    more_results_element = soup.find(has_more_results)
-    if more_results_element:
-        # get page with same parameters but with added lstart=len(results)
-        pass
+        for e in result_list:
+            event = create_event(e)
+            cal.add_component(event)
 
-    # print cal.to_ical()
+        # assuming the RTF page always returns 30 results per page. Haven't seen anything else or a parameter to
+        # change it, and it's the simplest way to check for more results.
+        lstart += 30
+        html = get_rtfs(params={'lstart': lstart})
+        result_list = html_to_result_list(html)
 
     with open('rtfcal.ics', 'w') as cal_file:
         cal_file.write(cal.to_ical())
@@ -174,7 +174,8 @@ if __name__ == '__main__':
     if (len(argv) < 2) or not ('-l' in argv or '-r' in argv):
         print 'Please say -l or -r for local or remote data source.'
     elif argv[1] == '-l':
-        with open("Termine_long.html") as fp:
-            html_to_ical(fp)
+        print "This is now broken!!!"
+        # with open("Termine_long.html") as fp:
+        #     results_to_ical(html_to_result_list(fp))
     elif argv[1] == '-r':
-        html_to_ical(get_rtfs())
+        results_to_ical(html_to_result_list(get_rtfs()))
