@@ -48,6 +48,7 @@ def get_date_and_distance(cell):
     # so we let every RTF start at 8am
     date_and_time = parse(day_and_date).replace(hour=8)
     tz_aware_date_and_time = date_and_time.replace(tzinfo=timezone('Europe/Berlin'))
+    # TODO: If searching without an Umkreis, this field is empty (index error).
     dist_from_home = cell.contents[2]
     return tz_aware_date_and_time, dist_from_home[1:-1]
 
