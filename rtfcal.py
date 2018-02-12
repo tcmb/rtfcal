@@ -14,7 +14,7 @@ BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 default_params = {
     'startdate': '01.01.2018',
     'enddate': '31.12.2018',
-    'umkreis': '200',  # preselections: 20, 50, 100, 200, 400
+    'umkreis': '50',  # preselections: 20, 50, 100, 200, 400
     'plz': '12055',
     'go': 'Termine+suchen',
     # 'art': '-1',
@@ -125,7 +125,7 @@ def create_event(e):
     }
 
     event = Event()
-    event.add('summary', rtf_attributes['rtf_name'])
+    event.add('summary', rtf_attributes['rtf_name'] + ' (' + rtf_attributes['rtf_dist_from_home'] + ')')
     event.add('uid', uuid4())
     event.add('dtstart', date_and_time)
     event.add('dtend', date_and_time + timedelta(hours=1))
