@@ -151,10 +151,11 @@ def html_to_result_list(html):
     return soup.find_all('a', class_='terminlink')
 
 
-def results_to_ical(result_list):
+def results_to_ical(result_list, original_params=None):
 
     lstart = 0
     cal = create_calendar()
+    original_params = original_params or {}
 
     print "Got %s results:\n%s" % (len(result_list), result_list)
 
@@ -166,9 +167,10 @@ def results_to_ical(result_list):
 
         # assuming the RTF page always returns 30 results per page. Haven't seen anything else or a parameter to
         # change it, and it's the simplest way to check for more results.
+        # However, it also always does 1 request more than necessary, just to find that there are no more results.
         lstart += 30
-        # TODO: this is forgetting the original search params
-        html = get_rtfs(params={'lstart': lstart})
+        original_params.update({'lstart': lstart})
+        html = get_rtfs(params=original_params)
         result_list = html_to_result_list(html)
 
     with open('rtfcal.ics', 'w') as cal_file:

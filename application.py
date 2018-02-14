@@ -51,5 +51,6 @@ def index():
 def search():
     params = get_search_params(request)
     params = validate_search_params(params)
-    ical = results_to_ical(html_to_result_list(get_rtfs(params=params)))
+    # TODO: kind of ugly that we're passing the same params into two functions here...
+    ical = results_to_ical(html_to_result_list(get_rtfs(params=params)), original_params=params)
     return render_template('ical.html', ical=ical)
