@@ -18,8 +18,8 @@ default_params = {
     'plz': '12055',
     'go': 'Termine+suchen',
     'art': '-1',
+    'lv': '-1',
     # 'titel': '',
-    # 'lv': '-1',
     # 'tid': '',
     # 'formproof': '',
 }
@@ -154,6 +154,8 @@ def results_to_ical(result_list):
 
     lstart = 0
     cal = create_calendar()
+
+    print "Got %s results:\n%s" % (len(result_list), result_list)
 
     while result_list:
 
