@@ -6,7 +6,6 @@ from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
 from copy import deepcopy
-import re
 import requests
 
 
@@ -39,10 +38,6 @@ def get_rtfs(params=None):
     print "searching with params %s" % request_params
     response = requests.get(BASE_URL, headers=headers, params=request_params)
     return response.content
-
-
-def pretty_print(rtf_dict):
-    print unicode(rtf_dict) + '\n'
 
 
 def get_date_and_distance(cell):
@@ -139,11 +134,6 @@ def create_event(e):
     add_alarm(event)
 
     return event
-
-
-def has_more_results(tag):
-    pattern = re.compile('Weitere Ergebnisse.*')
-    return tag.string and pattern.match(tag.string)
 
 
 def html_to_result_list(html):
