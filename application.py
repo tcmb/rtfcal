@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from rtfcal import get_rtfs, html_to_result_list, results_to_ical
 from dateparser import parse
 
@@ -53,4 +53,9 @@ def search():
     params = validate_search_params(params)
     # TODO: kind of ugly that we're passing the same params into two functions here...
     ical = results_to_ical(html_to_result_list(get_rtfs(params=params)), original_params=params)
-    return render_template('ical.html', ical=ical)
+    response = make_response(ical)
+    cd = 'attachment; filename=rtfcal.ics'
+    response.headers['Content-Disposition'] = cd
+    response.mimetype = 'text/calendar'
+
+    return response
