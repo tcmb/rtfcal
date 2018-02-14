@@ -16,15 +16,19 @@ def get_search_params(request):
     }
 
 
+def date_format(startdate, enddate):
+    return startdate.strftime('%d.%m.%Y'), enddate.strftime('%d.%m.%Y')
+
+
 def validate_dates(startdate, enddate):
     try:
-        startdate = parse(startdate)
-        enddate = parse(enddate)
+        startdate = parse(startdate).date()
+        enddate = parse(enddate).date()
     except:
         print 'AAAAaaaahhhh!'
         return
     assert startdate <= enddate
-    return startdate, enddate
+    return date_format(startdate, enddate)
 
 
 def validate_search_params(params):
