@@ -164,6 +164,7 @@ def results_to_ical(result_list):
         # assuming the RTF page always returns 30 results per page. Haven't seen anything else or a parameter to
         # change it, and it's the simplest way to check for more results.
         lstart += 30
+        # TODO: this is forgetting the original search params
         html = get_rtfs(params={'lstart': lstart})
         result_list = html_to_result_list(html)
 
