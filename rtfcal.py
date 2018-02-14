@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 from dateparser import parse
 from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard, Alarm
@@ -170,7 +171,7 @@ def results_to_ical(result_list):
         html = get_rtfs(params={'lstart': lstart})
         result_list = html_to_result_list(html)
 
-    return cal.to_ical()
+    return cal.to_ical().decode('utf-8')
 
     # with open('rtfcal.ics', 'w') as cal_file:
     #     cal_file.write(cal.to_ical())

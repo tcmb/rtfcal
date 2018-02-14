@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, request
 from rtfcal import get_rtfs, html_to_result_list, results_to_ical
 from dateparser import parse
