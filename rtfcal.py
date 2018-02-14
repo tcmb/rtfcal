@@ -165,8 +165,10 @@ def results_to_ical(result_list):
         html = get_rtfs(params={'lstart': lstart})
         result_list = html_to_result_list(html)
 
-    with open('rtfcal.ics', 'w') as cal_file:
-        cal_file.write(cal.to_ical())
+    return cal.to_ical()
+
+    # with open('rtfcal.ics', 'w') as cal_file:
+    #     cal_file.write(cal.to_ical())
 
 
 if __name__ == '__main__':
