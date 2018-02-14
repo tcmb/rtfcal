@@ -19,6 +19,8 @@
           gtag('config', 'UA-113525315-2');
 
 
+
+
     </script>
 
 
@@ -38,39 +40,50 @@
         <h2>Selektiere Parameter</h2>
         <form action="/ical" method="post">
             <div>
-                <input type="radio" name="activity_type" id="activity_type_ride" value="Ride" checked>
-                <label for="activity_type_ride">Ride</label>
+                <label for="startdate">Datum von</label>
+                <input name="startdate" id="startdate" value="01.01.2018"/>
 
-                <input type="radio" name="activity_type" id="activity_type_run" value="Run">
-                <label for="activity_type_run">Run</label>
+                <label for="enddate">bis</label>
+                <input name="enddate" id="enddate" value="31.12.2018"/>
             </div>
             <div>
-                <label for="min_activity_length">Minimum activity length (km, 1km = 1.6 miles)</label>
-                <input name="min_activity_length" id="min_activity_length" value="100"/>
+                <label for="kategorie">Kategorie</label>
+                <select name="kategorie" id="kategorie">
+                    <!-- options copy-pasted from rad-net.de -->
+                    <option value="-1" selected>Alle (außer Permanente)</option>
+                    <option value="2">Radtourenfahrten (RTF)</option>
+                    <option value="4">Radmarathon</option>
+                    <option value="5">Radmarathon-Cup Deutschland</option>
+                    <option value="6">Country-Tourenfahrten (CTF)</option>
+                    <option value="10">CTF-Permanente</option>
+                    <option value="1">RTF-Permanente</option>
+                    <option value="3">Etappenfahrten</option>
+                    <option value="7">Volksradfahren</option>
+                    <option value="8">Radwandern für Jedermann</option>
+                    <option value="9">Deutsches Radsportabzeichen</option>
+                    <!-- <option value="11"   >Etappen-Permanente</option> -->
+                    <option value="12">Richtig fit Tag Radfahren</option>
+                    <option value="14">Interland-Trofee</option>
+                    <!-- <option value="15"   >RAD-open</option>  -->
+                    <option value="16">BDR-COUNTRY CUP Deutschland</option>
+                </select>
             </div>
             <div>
-                <label for="max_activity_length">Maximum activity length (0 for unlimited, in km)</label>
-                <input name="max_activity_length" id="max_activity_length" value="0"/>
+                <label for="umkreis">Im Umkreis von:</label>
+                <select name="umkreis" id="umkreis">
+                    <option value="-1" selected="selected">Alle</option>
+                    <option value="20">20 km</option>
+                    <option value="50">50 km</option>
+                    <option value="100">100 km</option>
+                    <option value="200">200 km</option>
+                    <option value="400">400 km</option>
+                </select>
+
+                <label for="plz">um PLZ</label>
+                <input type="text" name="plz" id="plz" value="">
             </div>
             <div>
-                <label for="home_loc_lat">Home location latitude</label>
-                <input name="home_loc_lat" id="home_loc_lat" value="52.47"/><i>Click in the map to set longitude and
-                latitude!</i>
-            </div>
-            <div>
-                <label for="home_loc_lon">Home location longitude</label>
-                <input name="home_loc_lon" id="home_loc_lon" value="13.45"/>
-            </div>
-            <div>
-                <label for="max_dist_from_home">Max km from home for start/stop</label>
-                <input name="max_dist_from_home" id="max_dist_from_home" value="10"/>
-            </div>
-            <div>
-                <label for="max_results">Maximum number of results</label>
-                <input name="max_results" id="max_results" value="10"/>
-            </div>
-            <div>
-                <button>Submit</button>
+                <button>Suche</button>
             </div>
         </form>
     </div>
