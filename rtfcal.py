@@ -17,7 +17,7 @@ default_params = {
     'umkreis': '50',  # preselections: 20, 50, 100, 200, 400
     'plz': '12055',
     'go': 'Termine+suchen',
-    # 'art': '-1',
+    'art': '-1',
     # 'titel': '',
     # 'lv': '-1',
     # 'tid': '',
@@ -32,8 +32,10 @@ headers = {
 def get_rtfs(params=None):
     # copy or deepcopy shouldn't make a difference for current state of default_params, but you never know what
     # might go in there later.
+    print "got handed params %s" % params
     request_params = deepcopy(default_params)
     request_params.update(params or {})
+    print "searching with params %s" % request_params
     response = requests.get(BASE_URL, headers=headers, params=request_params)
     return response.content
 

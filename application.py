@@ -10,7 +10,7 @@ def get_search_params(request):
     return {
         "startdate": request.form['startdate'],
         "enddate": request.form['enddate'],
-        "kategorie": request.form['kategorie'],
+        "art": request.form['art'],
         "umkreis": request.form['umkreis'],
         "plz": request.form['plz'],
     }
@@ -46,5 +46,5 @@ def index():
 def search():
     params = get_search_params(request)
     params = validate_search_params(params)
-    ical = results_to_ical(html_to_result_list(get_rtfs(params)))
+    ical = results_to_ical(html_to_result_list(get_rtfs(params=params)))
     return render_template('ical.html', ical=ical)
