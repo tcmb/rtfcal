@@ -17,6 +17,16 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 
+# TODO: rethink default params. These are fine for local/personal usage, but consider these for data from remote/users:
+# - rad-net requires none of the form parameters and happily searches without any parameters
+# - if no dates are given, it assumes startdate = today and enddate = today + 3 months
+# - rad-net does all form validation server side. default dates come back into the form and url with the result
+# - it allows search without plz and umkreis, but only if both are empty
+# - if a plz is given, also an umkreis needs to be given (Umkreis "Alle" is considered invalid if a plz is given)
+# - if Umkreis is given, a plz needs to be given as well
+# - kategorie can be empty and is treated as -1 ('alle kategorien'), but unlike the default dates, this does not
+#   come back in the url
+# - Landesverband has the same behavior as kategorie
 DEFAULT_PARAMS = {
     'startdate': '01.01.2018',
     'enddate': '31.12.2018',
