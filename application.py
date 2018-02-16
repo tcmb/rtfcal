@@ -13,13 +13,13 @@ application = Flask(__name__)
 app = application
 
 
-def get_search_params(request):
+def get_search_params(req):
     return {
-        "startdate": request.form['startdate'],
-        "enddate": request.form['enddate'],
-        "art": request.form['art'],
-        "umkreis": request.form['umkreis'],
-        "plz": request.form['plz'],
+        "startdate": req.form['startdate'],
+        "enddate": req.form['enddate'],
+        "art": req.form['art'],
+        "umkreis": req.form['umkreis'],
+        "plz": req.form['plz'],
     }
 
 
@@ -42,10 +42,10 @@ def validate_search_params(params):
     """
     TODO: more validation
     """
-    default_params = deepcopy(DEFAULT_PARAMS)
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
     params['startdate'] = startdate
     params['enddate'] = enddate
+    default_params = deepcopy(DEFAULT_PARAMS)
     default_params.update(params)
     return default_params
 
