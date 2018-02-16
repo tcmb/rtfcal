@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 from dateparser import parse
 from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard, Alarm
 from pytz import timezone
@@ -28,6 +29,9 @@ DEFAULT_PARAMS = {
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36'
 }
+
+MORE_RESULTS_PATTERN = re.compile('Weitere Ergebnisse.*')
+PAGINATION_NODE_PATTERN = re.compile('\d+-\d+')
 
 
 def get_date_and_distance(cell):
@@ -126,12 +130,39 @@ def create_event(e):
     return event
 
 
+def get_pagination_nodes(tag):
+    """
+    Returns all the pagination nodes. A pagination node is a sibling of the "Weitere Ergebnisse" element that
+    contains a string like "1-30" or "31-60"
+    """
+    def is_pagination_node(tag):
+        # We need the explicit cast to unicode because tag.string can be None
+        return tag.string and PAGINATION_NODE_PATTERN.match(unicode(tag.string))
+
+    return [elem for elem in tag.next_siblings if is_pagination_node(elem)]
+
+
+def on_last_page(tags):
+    # Pagination nodes are either plain text (for the current page) or anchor tags (for previous and subsequent pages).
+    # We know we're on the last page if the last element in the list of pagination links is a plain text element
+    # instead of a hyperlink
+    return isinstance(tags[-1], NavigableString)
+
+
 def has_more_results(html):
-    def has_more_link(tag):
-        pattern = re.compile('Weitere Ergebnisse.*')
-        return tag.string and pattern.match(tag.string)
+    """
+    There's more results if we find the 'Weitere Ergebnisse' element and we're not on the last page of results
+    """
+    def has_more_results_text(tag):
+        return tag.string and MORE_RESULTS_PATTERN.match(tag.string)
+
     soup = BeautifulSoup(html, 'lxml')
-    return soup.find(has_more_link)
+    more_results_node = soup.find(has_more_results_text)
+    if more_results_node:
+        pagination_nodes = get_pagination_nodes(more_results_node)
+        is_last_page = on_last_page(pagination_nodes)
+        return more_results_node and not is_last_page
+    return False
 
 
 def get_rtfs(lstart=None, results=None, params=None):
