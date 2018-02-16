@@ -3,6 +3,11 @@ from flask import Flask, render_template, request, make_response
 from rtfcal import get_rtfs, results_to_ical, DEFAULT_PARAMS
 from dateparser import parse
 from copy import deepcopy
+import logging
+
+
+logging.basicConfig(level=logging.WARN)
+
 
 application = Flask(__name__)
 app = application

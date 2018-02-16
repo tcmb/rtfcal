@@ -9,6 +9,10 @@ from uuid import uuid4
 from copy import deepcopy
 from re import compile
 from requests import get
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
@@ -161,10 +165,10 @@ def has_more_results(html):
     soup = BeautifulSoup(html, 'lxml')
     more_results_node = soup.find(has_more_results_text)
     if more_results_node:
-        print "Found more_results_node"
+        logger.debug("Found more_results_node")
         pagination_nodes = get_pagination_nodes(more_results_node)
         is_last_page = on_last_page(pagination_nodes)
-        print "is_last_page is %s" % is_last_page
+        logger.debug("is_last_page is %s" % is_last_page)
         return more_results_node and not is_last_page
     return False
 
@@ -175,13 +179,13 @@ def get_rtfs(lstart=None, results=None, params=None):
     results = results or []
     params = params or deepcopy(DEFAULT_PARAMS)
 
-    print "getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results))
+    logger.debug("getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results)))
 
     html = get(BASE_URL, headers=HEADERS, params=params).content
     results.extend(html_to_result_list(html))
 
     if has_more_results(html):
-        print "page has more results, calling again"
+        logger.debug("page has more results, calling again")
         lstart += 30
         params.update({'lstart': lstart})
         get_rtfs(lstart=lstart, results=results, params=params)
@@ -196,11 +200,11 @@ def html_to_result_list(html):
 
 def results_to_ical(result_list):
 
-    print "Transforming %s results to iCal format" % len(result_list)
+    logger.debug("Transforming %s results to iCal format" % len(result_list))
 
     cal = create_calendar()
 
-    print "Got %s results:\n%s" % (len(result_list), result_list)
+    logger.debug("Got %s results:\n%s" % (len(result_list), result_list))
 
     for e in result_list:
         event = create_event(e)
@@ -213,11 +217,14 @@ def results_to_ical(result_list):
 
 
 if __name__ == '__main__':
+
+    logging.basicConfig()
+
     from sys import argv
     if (len(argv) < 2) or not ('-l' in argv or '-r' in argv):
-        print 'Please say -l or -r for local or remote data source.'
+        logger.info('Please say -l or -r for local or remote data source.')
     elif argv[1] == '-l':
-        print "This is now broken!!!"
+        logger.critical("This is now broken!!!")
         # with open("Termine_long.html") as fp:
         #     results_to_ical(html_to_result_list(fp))
     elif argv[1] == '-r':
