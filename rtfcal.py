@@ -161,8 +161,10 @@ def has_more_results(html):
     soup = BeautifulSoup(html, 'lxml')
     more_results_node = soup.find(has_more_results_text)
     if more_results_node:
+        print "Found more_results_node"
         pagination_nodes = get_pagination_nodes(more_results_node)
         is_last_page = on_last_page(pagination_nodes)
+        print "is_last_page is %s" % is_last_page
         return more_results_node and not is_last_page
     return False
 
