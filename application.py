@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response
-from rtfcal import get_rtfs, html_to_result_list, results_to_ical
+from rtfcal import get_rtfs, results_to_ical, DEFAULT_PARAMS
 from dateparser import parse
+from copy import deepcopy
 
 application = Flask(__name__)
 app = application
@@ -36,10 +37,12 @@ def validate_search_params(params):
     """
     TODO: more validation
     """
+    default_params = deepcopy(DEFAULT_PARAMS)
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
     params['startdate'] = startdate
     params['enddate'] = enddate
-    return params
+    default_params.update(params)
+    return default_params
 
 
 @app.route('/')
@@ -49,10 +52,10 @@ def index():
 
 @app.route('/search', methods=['POST'])
 def search():
-    params = get_search_params(request)
-    params = validate_search_params(params)
-    # TODO: kind of ugly that we're passing the same params into two functions here...
-    ical = results_to_ical(html_to_result_list(get_rtfs(params=params)), original_params=params)
+    search_params = get_search_params(request)
+    search_params = validate_search_params(search_params)
+    ical = results_to_ical(get_rtfs(params=search_params))
+
     response = make_response(ical)
     cd = 'attachment; filename=rtfcal.ics'
     response.headers['Content-Disposition'] = cd

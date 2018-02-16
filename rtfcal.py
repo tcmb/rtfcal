@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from copy import deepcopy
 import requests
+import re
 
 
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 
-default_params = {
+DEFAULT_PARAMS = {
     'startdate': '01.01.2018',
     'enddate': '31.12.2018',
     'umkreis': '50',  # preselections: 20, 50, 100, 200, 400
@@ -24,20 +25,9 @@ default_params = {
     # 'formproof': '',
 }
 
-headers = {
+HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
 }
-
-
-def get_rtfs(params=None):
-    # copy or deepcopy shouldn't make a difference for current state of default_params, but you never know what
-    # might go in there later.
-    print "got handed params %s" % params
-    request_params = deepcopy(default_params)
-    request_params.update(params or {})
-    print "searching with params %s" % request_params
-    response = requests.get(BASE_URL, headers=headers, params=request_params)
-    return response.content
 
 
 def get_date_and_distance(cell):
@@ -136,32 +126,45 @@ def create_event(e):
     return event
 
 
+def has_more_results(html):
+    def has_more_link(tag):
+        pattern = re.compile('Weitere Ergebnisse.*')
+        return tag.string and pattern.match(tag.string)
+    soup = BeautifulSoup(html, 'lxml')
+    return soup.find(has_more_link)
+
+
+def get_rtfs(lstart=None, results=None, params=None):
+
+    lstart = lstart or 0
+    results = results or []
+    params = params or deepcopy(DEFAULT_PARAMS)
+
+    html = requests.get(BASE_URL, headers=HEADERS, params=params)
+    results.append(html_to_result_list(html))
+
+    if has_more_results(html):
+        lstart += 30
+        params.update({'lstart': lstart})
+        get_rtfs(lstart=lstart, results=results, params=params)
+
+    return results
+
+
 def html_to_result_list(html):
     soup = BeautifulSoup(html, 'lxml')
     return soup.find_all('a', class_='terminlink')
 
 
-def results_to_ical(result_list, original_params=None):
+def results_to_ical(result_list):
 
-    lstart = 0
     cal = create_calendar()
-    original_params = original_params or {}
 
     print "Got %s results:\n%s" % (len(result_list), result_list)
 
-    while result_list:
-
-        for e in result_list:
-            event = create_event(e)
-            cal.add_component(event)
-
-        # assuming the RTF page always returns 30 results per page. Haven't seen anything else or a parameter to
-        # change it, and it's the simplest way to check for more results.
-        # However, it also always does 1 request more than necessary, just to find that there are no more results.
-        lstart += 30
-        original_params.update({'lstart': lstart})
-        html = get_rtfs(params=original_params)
-        result_list = html_to_result_list(html)
+    for e in result_list:
+        event = create_event(e)
+        cal.add_component(event)
 
     with open('rtfcal.ics', 'w') as cal_file:
         cal_file.write(cal.to_ical())
@@ -178,4 +181,4 @@ if __name__ == '__main__':
         # with open("Termine_long.html") as fp:
         #     results_to_ical(html_to_result_list(fp))
     elif argv[1] == '-r':
-        results_to_ical(html_to_result_list(get_rtfs()))
+        results_to_ical(get_rtfs())
