@@ -137,8 +137,9 @@ def get_pagination_nodes(tag):
     contains a string like "1-30" or "31-60"
     """
     def is_pagination_node(elem):
-        # We need the explicit cast to unicode because tag.string can be None
-        return elem.string and PAGINATION_NODE_PATTERN.match(unicode(elem.string))
+        # We need the explicit cast to unicode because tag.string can be None, and then also strip() because of
+        # leading and trailing newlines
+        return elem.string and PAGINATION_NODE_PATTERN.match(unicode(elem.string).strip())
 
     return [t for t in tag.next_siblings if is_pagination_node(t)]
 
