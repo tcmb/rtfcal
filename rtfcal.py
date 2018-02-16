@@ -140,10 +140,13 @@ def get_rtfs(lstart=None, results=None, params=None):
     results = results or []
     params = params or deepcopy(DEFAULT_PARAMS)
 
-    html = requests.get(BASE_URL, headers=HEADERS, params=params)
-    results.append(html_to_result_list(html))
+    print "getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results))
+
+    html = requests.get(BASE_URL, headers=HEADERS, params=params).content
+    results.extend(html_to_result_list(html))
 
     if has_more_results(html):
+        print "page has more results, calling again"
         lstart += 30
         params.update({'lstart': lstart})
         get_rtfs(lstart=lstart, results=results, params=params)
@@ -157,6 +160,8 @@ def html_to_result_list(html):
 
 
 def results_to_ical(result_list):
+
+    print "Transforming %s results to iCal format" % len(result_list)
 
     cal = create_calendar()
 
