@@ -30,8 +30,8 @@ def validate_dates(startdate, enddate):
 
     startdate = parse(startdate).date()
     enddate = parse(enddate).date()
-    assert startdate is not None and enddate is not None
-    assert startdate <= enddate
+    assert startdate is not None and enddate is not None, "Error parsing start or end date"
+    assert startdate <= enddate, "Start date must be before end date"
     return date_format(startdate, enddate)
 
 
