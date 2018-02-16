@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, abort
 from rtfcal import get_rtfs, results_to_ical, DEFAULT_PARAMS
 from dateparser import parse
 from copy import deepcopy
@@ -23,17 +23,14 @@ def get_search_params(req):
     }
 
 
-def date_format(startdate, enddate):
-    return startdate.strftime('%d.%m.%Y'), enddate.strftime('%d.%m.%Y')
-
-
 def validate_dates(startdate, enddate):
-    try:
-        startdate = parse(startdate).date()
-        enddate = parse(enddate).date()
-    except:
-        print 'AAAAaaaahhhh!'
-        return
+
+    def date_format(startdate, enddate):
+        return startdate.strftime('%d.%m.%Y'), enddate.strftime('%d.%m.%Y')
+
+    startdate = parse(startdate).date()
+    enddate = parse(enddate).date()
+    assert startdate is not None and enddate is not None
     assert startdate <= enddate
     return date_format(startdate, enddate)
 
@@ -57,8 +54,12 @@ def index():
 
 @app.route('/search', methods=['POST'])
 def search():
-    search_params = get_search_params(request)
-    search_params = validate_search_params(search_params)
+    try:
+        search_params = get_search_params(request)
+        search_params = validate_search_params(search_params)
+    except (KeyError, ValueError, AssertionError) as e:
+        # Defo the user's fault
+        abort(400, unicode(e))
     ical = results_to_ical(get_rtfs(params=search_params))
 
     response = make_response(ical)
