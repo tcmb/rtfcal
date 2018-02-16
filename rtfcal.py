@@ -7,8 +7,8 @@ from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
 from copy import deepcopy
-import requests
-import re
+from re import compile
+from requests import get
 
 
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
@@ -27,11 +27,12 @@ DEFAULT_PARAMS = {
 }
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, '
+                  'like Gecko) Chrome/64.0.3282.167 Safari/537.36'
 }
 
-MORE_RESULTS_PATTERN = re.compile('Weitere Ergebnisse.*')
-PAGINATION_NODE_PATTERN = re.compile('\d+-\d+')
+MORE_RESULTS_PATTERN = compile('Weitere Ergebnisse.*')
+PAGINATION_NODE_PATTERN = compile('\d+-\d+')
 
 
 def get_date_and_distance(cell):
@@ -135,11 +136,11 @@ def get_pagination_nodes(tag):
     Returns all the pagination nodes. A pagination node is a sibling of the "Weitere Ergebnisse" element that
     contains a string like "1-30" or "31-60"
     """
-    def is_pagination_node(tag):
+    def is_pagination_node(elem):
         # We need the explicit cast to unicode because tag.string can be None
-        return tag.string and PAGINATION_NODE_PATTERN.match(unicode(tag.string))
+        return elem.string and PAGINATION_NODE_PATTERN.match(unicode(elem.string))
 
-    return [elem for elem in tag.next_siblings if is_pagination_node(elem)]
+    return [t for t in tag.next_siblings if is_pagination_node(t)]
 
 
 def on_last_page(tags):
@@ -173,7 +174,7 @@ def get_rtfs(lstart=None, results=None, params=None):
 
     print "getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results))
 
-    html = requests.get(BASE_URL, headers=HEADERS, params=params).content
+    html = get(BASE_URL, headers=HEADERS, params=params).content
     results.extend(html_to_result_list(html))
 
     if has_more_results(html):
