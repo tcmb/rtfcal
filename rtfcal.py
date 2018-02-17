@@ -249,15 +249,5 @@ def results_to_ical(result_list):
 
 
 if __name__ == '__main__':
-
     logging.basicConfig()
-
-    from sys import argv
-    if (len(argv) < 2) or not ('-l' in argv or '-r' in argv):
-        logger.info('Please say -l or -r for local or remote data source.')
-    elif argv[1] == '-l':
-        logger.critical("This is now broken!!!")
-        # with open("Termine_long.html") as fp:
-        #     results_to_ical(html_to_result_list(fp))
-    elif argv[1] == '-r':
-        results_to_ical(get_rtfs())
+    results_to_ical(get_rtfs(params=MY_PARAMS))
