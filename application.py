@@ -24,8 +24,8 @@ def get_search_params(req):
 
 def validate_dates(startdate, enddate):
 
-    def date_format(startdate, enddate):
-        return startdate.strftime('%d.%m.%Y'), enddate.strftime('%d.%m.%Y')
+    def date_format(start, end):
+        return start.strftime('%d.%m.%Y'), end.strftime('%d.%m.%Y')
 
     startdate = parse(startdate)
     # parse() just silently returns None for invalid dates like 31.06.2018
@@ -52,9 +52,10 @@ def check_plz_and_umkreis(params):
 
 def validate_search_params(params):
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
-    assert params['plz'].strip() == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), "Zip code must be five-digit numeric"
+    assert params['plz'].strip() == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), \
+        "Zip code must be five-digit numeric"
     valid_kategorien = ['-1', '12', '14', '16']
-    valid_kategorien.extend([str(i) for i in range(1,11)])
+    valid_kategorien.extend([str(i) for i in range(1, 11)])
     assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, "Invalid Art parameter"
     assert params['umkreis'].strip() == "" or params['umkreis'].strip() in ['-1', '20', '50', '100', '200', '400'], \
         "Invalid Umkreis parameter"
@@ -73,6 +74,7 @@ def index():
 
 @app.route('/search', methods=['POST'])
 def search():
+    search_params = None
     try:
         search_params = get_search_params(request)
         search_params = validate_search_params(search_params)
