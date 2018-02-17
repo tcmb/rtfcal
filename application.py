@@ -27,8 +27,13 @@ def validate_dates(startdate, enddate):
     def date_format(startdate, enddate):
         return startdate.strftime('%d.%m.%Y'), enddate.strftime('%d.%m.%Y')
 
-    startdate = parse(startdate).date()
-    enddate = parse(enddate).date()
+    startdate = parse(startdate)
+    # parse() just silently returns None for invalid dates like 31.06.2018
+    assert startdate is not None, "Invalid start date"
+    startdate = startdate.date()
+    enddate = parse(enddate)
+    assert enddate is not None, "Invalid end date"
+    enddate = enddate.date()
     assert startdate is not None and enddate is not None, "Error parsing start or end date"
     assert startdate <= enddate, "Start date must be before end date"
     return date_format(startdate, enddate)
