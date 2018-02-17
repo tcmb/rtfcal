@@ -1,3 +1,5 @@
 .idea/
+.DS_Store
 rtfcal.ics
 *.pyc
+Termine*.html
