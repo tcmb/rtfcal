@@ -37,19 +37,21 @@ def validate_dates(startdate, enddate):
 def check_plz_and_umkreis(params):
     """
     If either plz or umkreis are given in parameters, the other must be there as well.
+    Umkreis of '-1' is interpreted as a non-value.
     """
-    plz = params.get('plz')
-    umkreis = params.get('umkreis')
-    if plz or umkreis:
+    plz = params.get('plz').strip()
+    umkreis = params.get('umkreis').strip()
+    if (plz or umkreis) and umkreis != '-1':
         assert plz and umkreis, "PLZ and Umkreis require each other"
 
 
 def validate_search_params(params):
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
-    assert params['plz'] == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), "Zip code must be five-digit numeric"
-    assert params['art'] == "" or params['art'] in ['-1', '12', '14', '16'].extend([str(i) for i in range(1,11)]), \
-        "Invalid Art parameter"
-    assert params['umkreis'] == "" or params['umkreis'] in ['-1', '20', '50', '100', '200', '400'], \
+    assert params['plz'].strip() == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), "Zip code must be five-digit numeric"
+    valid_kategorien = ['-1', '12', '14', '16']
+    valid_kategorien.extend([str(i) for i in range(1,11)])
+    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, "Invalid Art parameter"
+    assert params['umkreis'].strip() == "" or params['umkreis'].strip() in ['-1', '20', '50', '100', '200', '400'], \
         "Invalid Umkreis parameter"
     check_plz_and_umkreis(params)
     params['startdate'] = startdate
