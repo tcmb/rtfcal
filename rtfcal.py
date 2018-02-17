@@ -6,7 +6,6 @@ from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStand
 from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
-from copy import deepcopy
 from re import compile
 from requests import get
 import logging
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 
-# TODO: rethink default params. These are fine for local/personal usage, but consider these for data from remote/users:
+#  Rad-net's handling of default params:
 # - rad-net requires none of the form parameters and happily searches without any parameters
 # - if no dates are given, it assumes startdate = today and enddate = today + 3 months
 # - rad-net does all form validation server side. default dates come back into the form and url with the result
@@ -27,7 +26,7 @@ BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 # - kategorie can be empty and is treated as -1 ('alle kategorien'), but unlike the default dates, this does not
 #   come back in the url
 # - Landesverband has the same behavior as kategorie
-DEFAULT_PARAMS = {
+MY_PARAMS = {
     'startdate': '01.01.2018',
     'enddate': '31.12.2018',
     'umkreis': '50',  # preselections: 20, 50, 100, 200, 400
@@ -47,6 +46,28 @@ HEADERS = {
 
 MORE_RESULTS_PATTERN = compile('Weitere Ergebnisse.*')
 PAGINATION_NODE_PATTERN = compile('\d+-\d+')
+
+TWELVE_WEEKS = timedelta(weeks=12)
+
+
+def get_default_params():
+    """
+    For setting default start and end dates if none are provided in the form, we'd like to emulate rad-net's behavior
+    of defaulting to a timeframe from today to three months from now.
+    Python's timedelta doesn't take a 'months' argument. There's a recipe at
+    http://code.activestate.com/recipes/577274-subtract-or-add-a-month-to-a-datetimedate-or-datet/
+    for adding a month while respecting different number of days in a month. However, for our purposes,
+    adding a plain twelve weeks is good enough.
+    """
+    startdate = datetime.today().date()
+    enddate = startdate + TWELVE_WEEKS
+    return {
+        'startdate': startdate.strftime('%d.%m.%Y'),
+        'enddate': enddate.strftime('%d.%m.%Y'),
+        'go': 'Termine+suchen',
+        'art': '-1',
+        'lv': '-1',
+    }
 
 
 def get_date_and_distance(cell):
@@ -172,6 +193,7 @@ def has_more_results(html):
     def has_more_results_text(tag):
         return tag.string and MORE_RESULTS_PATTERN.match(tag.string)
 
+    # TODO: avoid parsing the entire document again
     soup = BeautifulSoup(html, 'lxml')
     more_results_node = soup.find(has_more_results_text)
     if more_results_node:
@@ -187,7 +209,7 @@ def get_rtfs(lstart=None, results=None, params=None):
 
     lstart = lstart or 0
     results = results or []
-    params = params or deepcopy(DEFAULT_PARAMS)
+    params = params or get_default_params()
 
     logger.debug("getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results)))
 

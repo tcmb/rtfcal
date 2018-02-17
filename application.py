@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response, abort
-from rtfcal import get_rtfs, results_to_ical, DEFAULT_PARAMS
+from rtfcal import get_rtfs, results_to_ical, get_default_params
 from dateparser import parse
-from copy import deepcopy
 import logging
 
 
@@ -42,7 +41,7 @@ def validate_search_params(params):
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
     params['startdate'] = startdate
     params['enddate'] = enddate
-    default_params = deepcopy(DEFAULT_PARAMS)
+    default_params = get_default_params()
     default_params.update(params)
     return default_params
 
