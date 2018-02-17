@@ -77,9 +77,8 @@ def get_date_and_distance(cell):
     # so we let every RTF start at 8am
     date_and_time = parse(day_and_date).replace(hour=8)
     tz_aware_date_and_time = date_and_time.replace(tzinfo=timezone('Europe/Berlin'))
-    # TODO: If searching without an Umkreis, this field is empty (index error).
-    dist_from_home = cell.contents[2]
-    return tz_aware_date_and_time, dist_from_home[1:-1]
+    dist_from_home = cell.contents[2][1:-1] if len(cell.contents) > 1 else None
+    return tz_aware_date_and_time, dist_from_home
 
 
 def create_description(rtf_attributes):
@@ -154,7 +153,10 @@ def create_event(e):
     }
 
     event = Event()
-    event.add('summary', rtf_attributes['rtf_name'] + ' (' + rtf_attributes['rtf_dist_from_home'] + ')')
+    summary = rtf_attributes['rtf_name']
+    if rtf_attributes.get('rtf_dist_from_home'):
+        summary += ' (' + rtf_attributes['rtf_dist_from_home'] + ')'
+    event.add('summary', summary)
     event.add('uid', uuid4())
     event.add('dtstart', date_and_time)
     event.add('dtend', date_and_time + timedelta(hours=1))
