@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
     <title>RTFCal</title>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113525315-2"></script>
@@ -17,12 +16,7 @@
           gtag('js', new Date());
 
           gtag('config', 'UA-113525315-2');
-
-
-
-
     </script>
-
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -31,13 +25,18 @@
 </head>
 <body>
 {% block body %}
-
 <div id="outer">
-    <div id="title">
-        <h1>RTFCal: RTF Termine als iCalendar export</h1>
+    <div id="title"><h1>RTFCal: RTF Termine als iCalendar export</h1></div>
+    <div id="intro">
+        <p>
+            RTFCal führt eine RTF-Suche durch im <a href="http://breitensport.rad-net.de/breitensportkalender">Breitensportkalender</a>
+            und exportiert die Ergebnisse als Datei im iCalender-Format.<br/>
+            Die iCal-Datei wird vom Browser automatisch heruntergeladen und kann danach in Programme wie Outlook, Google Calendar,
+            Thunderbird oder Apple Kalender importiert werden.
+        </p>
     </div>
     <div id="param_form">
-        <h2>Selektiere Parameter</h2>
+        <h2>Suchoptionen</h2>
         <form action="/search" method="post">
             <div>
                 <label for="startdate">Datum von</label>
@@ -88,15 +87,13 @@
         </form>
     </div>
 </div>
-<div id="intro">
-    <h3>Was ist das?</h3>
-    <p>RTFCal Blubb</p>
+<div id="usage">
+    <h4>Hinweise zur Benutzung</h4>
     <ul>
-        <li>Daten werden nicht gespeichert</li>
-        <li>Alle Parameter sind verpflichtend</li>
-        <li>Duplikate in Ergebnissen kommen von rad-net.de</li>
-        <li>Wenn Suche mit Umkreis, PLZ und Umkreis sind verpflichtend</li>
-        <li>Wenn Suche mit Umkreis, steht Entfernung von PLZ im Event-Titel</li>
+        <li>Die eingegebenen Daten werden nicht gespeichert.</li>
+        <li>Wenn mit Umkreis gesucht wird, sind PLZ und Umkreis verpflichtende Parameter.</li>
+        <li>Wenn mit Umkreis und Postleitzahl gesucht wird, steht Entfernung des RTFs von der Postleitzahl im Event-Titel</li>
+        <li>Fragen, Anregungen, und Bug-Reports bitte per <a href="https://github.com/tcmb/rtfcal">Github</a>.</li>
     </ul>
 </div>
 {% endblock %}

@@ -2,7 +2,10 @@ body {
     margin: 20px
 }
 
-
 a {
     text-decoration: underline;
+}
+
+#outer {
+    width: 80%
 }
