@@ -189,15 +189,13 @@ def on_last_page(tags):
     return isinstance(tags[-1], NavigableString)
 
 
-def has_more_results(html):
+def has_more_results(soup):
     """
     There's more results if we find the 'Weitere Ergebnisse' element and we're not on the last page of results
     """
     def has_more_results_text(tag):
         return tag.string and MORE_RESULTS_PATTERN.match(tag.string)
 
-    # TODO: avoid parsing the entire document again
-    soup = BeautifulSoup(html, 'lxml')
     more_results_node = soup.find(has_more_results_text)
     if more_results_node:
         logger.debug("Found more_results_node")
@@ -217,9 +215,10 @@ def get_rtfs(lstart=None, results=None, params=None):
     logger.debug("getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results)))
 
     html = get(BASE_URL, headers=HEADERS, params=params).content
-    results.extend(html_to_result_list(html))
+    soup = BeautifulSoup(html, 'lxml')
+    results.extend(find_rtfs(soup))
 
-    if has_more_results(html):
+    if has_more_results(soup):
         logger.debug("page has more results, calling again")
         lstart += 30
         params.update({'lstart': lstart})
@@ -228,8 +227,7 @@ def get_rtfs(lstart=None, results=None, params=None):
     return results
 
 
-def html_to_result_list(html):
-    soup = BeautifulSoup(html, 'lxml')
+def find_rtfs(soup):
     return soup.find_all('a', class_='terminlink')
 
 
