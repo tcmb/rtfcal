@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response, abort
-from rtfcal import get_rtfs, results_to_ical, get_default_params
+from rtfcal import get_rtfs, results_to_ical, get_default_params, ZIP_CODE_PATTERN
 from dateparser import parse
 import logging
 
@@ -34,11 +34,24 @@ def validate_dates(startdate, enddate):
     return date_format(startdate, enddate)
 
 
+def check_plz_and_umkreis(params):
+    """
+    If either plz or umkreis are given in parameters, the other must be there as well.
+    """
+    plz = params.get('plz')
+    umkreis = params.get('umkreis')
+    if plz or umkreis:
+        assert plz and umkreis, "PLZ and Umkreis require each other"
+
+
 def validate_search_params(params):
-    """
-    TODO: more validation
-    """
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
+    assert params['zip'] == "" or ZIP_CODE_PATTERN.match(params['zip'].strip()), "Zip code must be five-digit numeric"
+    assert params['art'] == "" or params['art'] in ['-1', '12', '14', '16'].extend([str(i) for i in range(1,11)]), \
+        "Invalid Art parameter"
+    assert params['umkreis'] == "" or params['umkreis'] in ['-1', '20', '50', '100', '200', '400'], \
+        "Invalid Umkreis parameter"
+    check_plz_and_umkreis(params)
     params['startdate'] = startdate
     params['enddate'] = enddate
     default_params = get_default_params()

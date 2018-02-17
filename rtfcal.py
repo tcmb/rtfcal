@@ -46,6 +46,7 @@ HEADERS = {
 
 MORE_RESULTS_PATTERN = compile('Weitere Ergebnisse.*')
 PAGINATION_NODE_PATTERN = compile('\d+-\d+')
+ZIP_CODE_PATTERN = compile('^\d{5}$')
 
 TWELVE_WEEKS = timedelta(weeks=12)
 
