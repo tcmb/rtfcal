@@ -46,7 +46,7 @@ def check_plz_and_umkreis(params):
 
 def validate_search_params(params):
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
-    assert params['zip'] == "" or ZIP_CODE_PATTERN.match(params['zip'].strip()), "Zip code must be five-digit numeric"
+    assert params['plz'] == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), "Zip code must be five-digit numeric"
     assert params['art'] == "" or params['art'] in ['-1', '12', '14', '16'].extend([str(i) for i in range(1,11)]), \
         "Invalid Art parameter"
     assert params['umkreis'] == "" or params['umkreis'] in ['-1', '20', '50', '100', '200', '400'], \
