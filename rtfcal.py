@@ -231,7 +231,7 @@ def find_rtfs(soup):
     return soup.find_all('a', class_='terminlink')
 
 
-def results_to_ical(result_list):
+def results_to_ical(result_list, write_file=False):
 
     logger.debug("Transforming %s results to iCal format" % len(result_list))
 
@@ -243,12 +243,13 @@ def results_to_ical(result_list):
         event = create_event(e)
         cal.add_component(event)
 
-    with open('rtfcal.ics', 'w') as cal_file:
-        cal_file.write(cal.to_ical())
+    if write_file:
+        with open('rtfcal.ics', 'w') as cal_file:
+            cal_file.write(cal.to_ical())
 
     return cal.to_ical().decode('utf-8')
 
 
 if __name__ == '__main__':
     logging.basicConfig()
-    results_to_ical(get_rtfs(params=MY_PARAMS))
+    results_to_ical(get_rtfs(params=MY_PARAMS), write_file=True)

@@ -81,7 +81,7 @@ def search():
     except (KeyError, ValueError, AssertionError) as e:
         # Defo the user's fault
         abort(400, unicode(e))
-    ical = results_to_ical(get_rtfs(params=search_params))
+    ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
     response = make_response(ical)
     cd = 'attachment; filename=rtfcal.ics'
