@@ -124,15 +124,6 @@ def create_calendar():
     return cal
 
 
-def add_alarm(event):
-    alarm = Alarm()
-    alarm.add('action', 'DISPLAY')
-    alert_time = timedelta(days=-1)
-    alarm.add('trigger', alert_time)
-    event.add_component(alarm)
-    return event
-
-
 def create_event(e):
 
     rtf_link = e.attrs.get('href')
@@ -161,8 +152,6 @@ def create_event(e):
     event.add('dtstamp', datetime.now())
     event.add('url', rtf_attributes['rtf_link'])
     event.add('description', create_description(rtf_attributes))
-
-    add_alarm(event)
 
     return event
 
