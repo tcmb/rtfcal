@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from dateparser import parse
 from icalendar import Calendar, Event, Timezone, TimezoneDaylight, TimezoneStandard, Alarm
-from pytz import timezone
 from datetime import datetime, timedelta
 from uuid import uuid4
 from re import compile
@@ -73,12 +72,11 @@ def get_default_params():
 
 def get_date_and_distance(cell):
     day_and_date = cell.contents[0]
-    # Not sure how to set all day events, and event visibility is bad when it starts at midnight,
-    # so we let every RTF start at 8am
-    date_and_time = parse(day_and_date).replace(hour=8)
-    tz_aware_date_and_time = date_and_time.replace(tzinfo=timezone('Europe/Berlin'))
+    # We make all events all-day events, because the actual time is not contained in Rad-Net's calendar
+    startdate = parse(day_and_date).date()
+    enddate = startdate + timedelta(days=1)
     dist_from_home = cell.contents[2][1:-1] if len(cell.contents) > 1 else None
-    return tz_aware_date_and_time, dist_from_home
+    return startdate, enddate, dist_from_home
 
 
 def create_description(rtf_attributes):
@@ -140,11 +138,11 @@ def create_event(e):
     rtf_link = e.attrs.get('href')
     rtf_cells = e.find_all('div', class_='zelle')
 
-    date_and_time, dist_from_home = get_date_and_distance(rtf_cells[1])
+    startdate, enddate, dist_from_home = get_date_and_distance(rtf_cells[1])
 
     rtf_attributes = {
         'rtf_type': rtf_cells[0].find('div', class_='tooltip').string,
-        'rtf_date': date_and_time,
+        'rtf_date': startdate,
         'rtf_dist_from_home': dist_from_home,
         'rtf_name': rtf_cells[2].string if rtf_cells[2] else '',
         'rtf_lengths': rtf_cells[3].string if rtf_cells[3] else '',
@@ -158,8 +156,8 @@ def create_event(e):
         summary += ' (' + rtf_attributes['rtf_dist_from_home'] + ')'
     event.add('summary', summary)
     event.add('uid', uuid4())
-    event.add('dtstart', date_and_time)
-    event.add('dtend', date_and_time + timedelta(hours=1))
+    event.add('dtstart', startdate)
+    event.add('dtend', enddate)
     event.add('dtstamp', datetime.now())
     event.add('url', rtf_attributes['rtf_link'])
     event.add('description', create_description(rtf_attributes))
