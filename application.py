@@ -30,12 +30,12 @@ def validate_dates(startdate, enddate):
 
     startdate = parse(startdate)
     # parse() just silently returns None for invalid dates like 31.06.2018
-    assert startdate is not None, "Ungültiges Startdatum."
+    assert startdate is not None, u"Ungültiges Startdatum."
     startdate = startdate.date()
     enddate = parse(enddate)
-    assert enddate is not None, "Ungültiges Enddatum."
+    assert enddate is not None, u"Ungültiges Enddatum."
     enddate = enddate.date()
-    assert startdate <= enddate, "Das Startdatum muss vor dem Enddatum liegen."
+    assert startdate <= enddate, u"Das Startdatum muss vor dem Enddatum liegen."
     return date_format(startdate, enddate)
 
 
@@ -47,7 +47,7 @@ def check_plz_and_umkreis(params):
     plz = params.get('plz').strip()
     umkreis = params.get('umkreis').strip()
     if (plz or umkreis) and umkreis != '-1':
-        assert plz and umkreis, "Postleitzahl and Umkreis müssen zusammen angegeben werden (oder keins von beiden)."
+        assert plz and umkreis, u"Postleitzahl and Umkreis müssen zusammen angegeben werden (oder keins von beiden)."
 
 
 def validate_search_params(params):
@@ -56,9 +56,9 @@ def validate_search_params(params):
         "Postleitzahl muss eine fünfstellige Zahl sein."
     valid_kategorien = ['-1', '12', '14', '16']
     valid_kategorien.extend([str(i) for i in range(1, 11)])
-    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, "Ungültige Kategorie (RTF, CTF,...). "
+    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, u"Ungültige Kategorie (RTF, CTF,...). "
     assert params['umkreis'].strip() == "" or params['umkreis'].strip() in ['-1', '20', '50', '100', '200', '400'], \
-        "Ungültiger Wert für 'Umkreis'"
+        u"Ungültiger Wert für 'Umkreis'"
     check_plz_and_umkreis(params)
     params['startdate'] = startdate
     params['enddate'] = enddate
@@ -84,7 +84,7 @@ def search():
         search_params = validate_search_params(search_params)
     except (KeyError, ValueError, AssertionError) as e:
         # Defo the user's fault
-        logging.info('Failure: Validation error causing 400 response: %s' % unicode(e))
+        logging.info(u'Failure: Validation error causing 400 response: %s' % e)
         abort(400, unicode(e))
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
