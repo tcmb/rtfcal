@@ -6,7 +6,7 @@ from datetime import date
 import logging
 
 
-logging.basicConfig(level=logging.WARN)
+logging.basicConfig(level=logging.INFO)
 
 
 application = Flask(__name__)
@@ -72,6 +72,7 @@ def index():
     ctx = {
         'start_date': date.today().strftime('%d.%m.%Y')
     }
+    logging.info('Neutral: Served the homepage.')
     return render_template('index.html', **ctx)
 
 
@@ -83,6 +84,7 @@ def search():
         search_params = validate_search_params(search_params)
     except (KeyError, ValueError, AssertionError) as e:
         # Defo the user's fault
+        logging.info('Failure: Validation error causing 400 response: %s' % unicode(e))
         abort(400, unicode(e))
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
@@ -90,5 +92,7 @@ def search():
     cd = 'attachment; filename=rtfcal.ics'
     response.headers['Content-Disposition'] = cd
     response.mimetype = 'text/calendar'
+
+    logging.info('Success: Served an ics download.')
 
     return response
