@@ -7,5 +7,10 @@ a {
 }
 
 #outer {
-    width: 80%
+    width: 80%;
+}
+
+#intro {
+    margin: 10px;
+    width: 820px;
 }

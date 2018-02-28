@@ -24,17 +24,25 @@
     {% endblock %}
 </head>
 <body>
+
 {% block body %}
 <div id="outer">
+
     <div id="title"><h1>RTFCal: RTF Termine als Kalender-Export</h1></div>
+
+    <div id="image">
+        <img src="static/images/rtfcal.png" alt="Bildschirmfoto" decoding="async"/>
+    </div>
+
     <div id="intro">
         <p>
             RTFCal führt eine RTF-Suche im bundesweiten <a href="http://breitensport.rad-net.de/breitensportkalender">Breitensportkalender</a>
-            des <a href="https://www.bdr-online.org">BDR</a> durch und exportiert die Ergebnisse als Datei im iCalender-Format.<br/>
+            des <a href="https://www.bdr-online.org">BDR</a> durch und exportiert die Ergebnisse als Datei im iCalender-Format.
             Die iCal-Datei wird vom Browser automatisch heruntergeladen und kann danach in Programme wie Outlook, Google Calendar,
             Thunderbird oder Apple Kalender importiert werden.
         </p>
     </div>
+
     <div id="param_form">
         <h2>Suchoptionen</h2>
         <form action="/search" method="post">
@@ -87,6 +95,7 @@
         </form>
     </div>
 </div>
+
 <div id="usage">
     <h4>Hinweise zur Benutzung</h4>
     <ul>
