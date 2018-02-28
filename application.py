@@ -30,13 +30,12 @@ def validate_dates(startdate, enddate):
 
     startdate = parse(startdate)
     # parse() just silently returns None for invalid dates like 31.06.2018
-    assert startdate is not None, "Invalid start date"
+    assert startdate is not None, "Ungültiges Startdatum."
     startdate = startdate.date()
     enddate = parse(enddate)
-    assert enddate is not None, "Invalid end date"
+    assert enddate is not None, "Ungültiges Enddatum."
     enddate = enddate.date()
-    assert startdate is not None and enddate is not None, "Error parsing start or end date"
-    assert startdate <= enddate, "Start date must be before end date"
+    assert startdate <= enddate, "Das Startdatum muss vor dem Enddatum liegen."
     return date_format(startdate, enddate)
 
 
@@ -48,18 +47,18 @@ def check_plz_and_umkreis(params):
     plz = params.get('plz').strip()
     umkreis = params.get('umkreis').strip()
     if (plz or umkreis) and umkreis != '-1':
-        assert plz and umkreis, "PLZ and Umkreis require each other"
+        assert plz and umkreis, "Postleitzahl and Umkreis müssen zusammen angegeben werden (oder keins von beiden)."
 
 
 def validate_search_params(params):
     startdate, enddate = validate_dates(params['startdate'], params['enddate'])
     assert params['plz'].strip() == "" or ZIP_CODE_PATTERN.match(params['plz'].strip()), \
-        "Zip code must be five-digit numeric"
+        "Postleitzahl muss eine fünfstellige Zahl sein."
     valid_kategorien = ['-1', '12', '14', '16']
     valid_kategorien.extend([str(i) for i in range(1, 11)])
-    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, "Invalid Art parameter"
+    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, "Ungültige Kategorie (RTF, CTF,...). "
     assert params['umkreis'].strip() == "" or params['umkreis'].strip() in ['-1', '20', '50', '100', '200', '400'], \
-        "Invalid Umkreis parameter"
+        "Ungültiger Wert für 'Umkreis'"
     check_plz_and_umkreis(params)
     params['startdate'] = startdate
     params['enddate'] = enddate
