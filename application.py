@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, make_response, abort
 from rtfcal import get_rtfs, results_to_ical, get_default_params, ZIP_CODE_PATTERN
 from dateparser import parse
+from datetime import date
 import logging
 
 
@@ -69,7 +70,10 @@ def validate_search_params(params):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    ctx = {
+        'start_date': date.today().strftime('%d.%m.%Y')
+    }
+    return render_template('index.html', **ctx)
 
 
 @app.route('/search', methods=['POST'])
