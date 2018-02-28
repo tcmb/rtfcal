@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, make_response, abort
 from rtfcal import get_rtfs, results_to_ical, get_default_params, ZIP_CODE_PATTERN
 from dateparser import parse
-from datetime import date
+from datetime import date, timedelta
 import logging
 
 
@@ -69,8 +69,11 @@ def validate_search_params(params):
 
 @app.route('/')
 def index():
+    today = date.today()
+    three_months = today + timedelta(days=90)
     ctx = {
-        'start_date': date.today().strftime('%d.%m.%Y')
+        'start_date': today.strftime('%d.%m.%Y'),
+        'end_date': three_months.strftime('%d.%m.%Y')
     }
     logging.info('Neutral: Served the homepage.')
     return render_template('index.html', **ctx)
