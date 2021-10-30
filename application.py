@@ -67,7 +67,7 @@ def validate_search_params(params):
     return default_params
 
 
-@app.route('/rtfcal/')
+@app.route('/')
 def index():
     today = date.today()
     three_months = today + timedelta(days=90)
@@ -79,7 +79,7 @@ def index():
     return render_template('index.html', **ctx)
 
 
-@app.route('/rtfcal/search', methods=['POST'])
+@app.route('/search/', methods=['POST'])
 def search():
     search_params = None
     try:
