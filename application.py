@@ -56,7 +56,8 @@ def validate_search_params(params):
         "Postleitzahl muss eine fünfstellige Zahl sein."
     valid_kategorien = ['-1', '12', '14', '16']
     valid_kategorien.extend([str(i) for i in range(1, 11)])
-    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, u"Ungültige Kategorie (RTF, CTF,...). "
+    assert params['art'].strip() == "" or params['art'].strip() in valid_kategorien, \
+        u"Ungültige Kategorie (RTF, CTF,...). "
     assert params['umkreis'].strip() == "" or params['umkreis'].strip() in ['-1', '20', '50', '100', '200', '400'], \
         u"Ungültiger Wert für 'Umkreis'"
     check_plz_and_umkreis(params)
@@ -88,7 +89,7 @@ def search():
     except (KeyError, ValueError, AssertionError) as e:
         # Defo the user's fault
         logging.info(u'Failure: Validation error causing 400 response: %s' % e)
-        abort(400, unicode(e))
+        abort(400, str(e))
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
     response = make_response(ical)

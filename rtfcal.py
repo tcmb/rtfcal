@@ -44,8 +44,8 @@ HEADERS = {
 }
 
 MORE_RESULTS_PATTERN = compile('Weitere Ergebnisse.*')
-PAGINATION_NODE_PATTERN = compile('\d+-\d+')
-ZIP_CODE_PATTERN = compile('^\d{5}$')
+PAGINATION_NODE_PATTERN = compile(r'\d+-\d+')
+ZIP_CODE_PATTERN = compile(r'^\d{5}$')
 
 TWELVE_WEEKS = timedelta(weeks=12)
 
@@ -164,7 +164,7 @@ def get_pagination_nodes(tag):
     def is_pagination_node(elem):
         # We need the explicit cast to unicode because tag.string can be None, and then also strip() because of
         # leading and trailing newlines
-        return elem.string and PAGINATION_NODE_PATTERN.match(unicode(elem.string).strip())
+        return elem.string and PAGINATION_NODE_PATTERN.match(str(elem.string).strip())
 
     return [t for t in tag.next_siblings if is_pagination_node(t)]
 
