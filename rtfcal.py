@@ -26,10 +26,10 @@ BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 #   come back in the url
 # - Landesverband has the same behavior as kategorie
 MY_PARAMS = {
-    'startdate': '01.01.2018',
-    'enddate': '31.12.2018',
-    'umkreis': '50',  # preselections: 20, 50, 100, 200, 400
-    'plz': '12055',
+    'startdate': '01.01.2022',
+    'enddate': '01.04.2022',
+    'umkreis': '20',  # preselections: 20, 50, 100, 200, 400
+    'plz': '63263',
     'go': 'Termine+suchen',
     'art': '-1',
     'lv': '-1',
@@ -232,7 +232,7 @@ def results_to_ical(result_list, write_file=False):
 
     if write_file:
         with open('rtfcal.ics', 'w') as cal_file:
-            cal_file.write(cal.to_ical())
+            cal_file.write(cal.to_ical().decode('utf-8'))
 
     return cal.to_ical().decode('utf-8')
 
