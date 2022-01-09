@@ -193,7 +193,7 @@ def has_more_results(soup):
     return False
 
 
-def get_rtfs(lstart=None, results=None, params=None):
+def get_rtfs(lstart=None, results=None, params=None, local=False):
 
     lstart = lstart or 0
     results = results or []
@@ -201,7 +201,11 @@ def get_rtfs(lstart=None, results=None, params=None):
 
     logger.debug("getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results)))
 
-    html = get(BASE_URL, headers=HEADERS, params=params).content
+    if local:
+        with open("/Users/flo/code/rtfcal/Termine02.html") as i:
+            html = i.read()
+    else:
+        html = get(BASE_URL, headers=HEADERS, params=params).content
     soup = BeautifulSoup(html, 'lxml')
     results.extend(find_rtfs(soup))
 
@@ -239,4 +243,4 @@ def results_to_ical(result_list, write_file=False):
 
 if __name__ == '__main__':
     logging.basicConfig()
-    results_to_ical(get_rtfs(params=MY_PARAMS), write_file=True)
+    results_to_ical(get_rtfs(params=MY_PARAMS, local=False), write_file=True)
