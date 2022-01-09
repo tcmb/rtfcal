@@ -73,7 +73,7 @@ def get_default_params():
 def get_date_and_distance(cell):
     day_and_date = cell.contents[0]
     # We make all events all-day events, because the actual time is not contained in Rad-Net's calendar
-    startdate = parse(day_and_date).date()
+    startdate = parse(day_and_date, languages=['de']).date()
     enddate = startdate + timedelta(days=1)
     dist_from_home = cell.contents[2][1:-1] if len(cell.contents) > 1 else None
     return startdate, enddate, dist_from_home
