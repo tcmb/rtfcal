@@ -102,3 +102,8 @@ def search():
     logger.debug('Success: Served an ics download.')
 
     return response
+
+
+@app.route('/impressum', methods=['GET'])
+def impressum() -> str:
+    return render_template('impressum.html')
