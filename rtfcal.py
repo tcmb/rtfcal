@@ -242,5 +242,5 @@ def results_to_ical(result_list, write_file=False):
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
+    logging.basicConfig(level=logging.info)
     results_to_ical(get_rtfs(params=MY_PARAMS, local=False), write_file=True)

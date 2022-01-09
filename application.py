@@ -7,6 +7,7 @@ import logging
 
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 application = Flask(__name__)
@@ -76,7 +77,7 @@ def index():
         'start_date': today.strftime('%d.%m.%Y'),
         'end_date': three_months.strftime('%d.%m.%Y')
     }
-    logging.info('Neutral: Served the homepage.')
+    logger.info('Neutral: Served the homepage.')
     return render_template('index.html', **ctx)
 
 
@@ -88,9 +89,9 @@ def search():
         search_params = validate_search_params(search_params)
     except (KeyError, ValueError, AssertionError) as e:
         # Defo the user's fault
-        logging.info(u'Failure: Validation error causing 400 response: %s' % e)
+        logger.info(u'Failure: Validation error causing 400 response: %s' % e)
         abort(400, str(e))
-    logging.info('Getting results for params %s' % search_params.items())
+    logger.info('Getting results for params %s' % search_params.items())
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
     response = make_response(ical)
@@ -98,6 +99,6 @@ def search():
     response.headers['Content-Disposition'] = cd
     response.mimetype = 'text/calendar'
 
-    logging.info('Success: Served an ics download.')
+    logger.debug('Success: Served an ics download.')
 
     return response
