@@ -90,6 +90,7 @@ def search():
         # Defo the user's fault
         logging.info(u'Failure: Validation error causing 400 response: %s' % e)
         abort(400, str(e))
+    logging.info('Getting results for params %s' % search_params.items())
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
     response = make_response(ical)
