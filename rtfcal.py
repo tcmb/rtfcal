@@ -7,12 +7,14 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from re import compile
 from requests import get
+from urllib.parse import urlparse, urlunparse
 import logging
 
 
 logger = logging.getLogger(__name__)
 
-
+URL_SCHEME = 'https'
+URL_HOSTNAME = 'breitensport.rad-net.de'
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
 
 #  Rad-net's handling of default params:
@@ -126,7 +128,17 @@ def create_calendar():
 
 def create_event(e):
 
-    rtf_link = e.attrs.get('href')
+    rtf_url_components = urlparse(e.attrs.get('href'))
+    url_scheme = rtf_url_components.scheme or URL_SCHEME
+    url_hostname = rtf_url_components.hostname or URL_HOSTNAME
+    rtf_link = urlunparse([
+        url_scheme,
+        url_hostname,
+        rtf_url_components.path,
+        rtf_url_components.params,
+        rtf_url_components.query,
+        rtf_url_components.fragment
+    ])
     rtf_cells = e.find_all('div', class_='zelle')
 
     startdate, enddate, dist_from_home = get_date_and_distance(rtf_cells[1])
@@ -242,5 +254,5 @@ def results_to_ical(result_list, write_file=False):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.info)
+    logging.basicConfig(level=logging.INFO)
     results_to_ical(get_rtfs(params=MY_PARAMS, local=False), write_file=True)
