@@ -41,8 +41,7 @@ MY_PARAMS = {
 }
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, '
-                  'like Gecko) Chrome/64.0.3282.167 Safari/537.36'
+    'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0"
 }
 
 MORE_RESULTS_PATTERN = compile('Weitere Ergebnisse.*')
