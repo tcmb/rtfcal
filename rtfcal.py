@@ -29,12 +29,12 @@ EMPTY_CALENDAR_FILE = 'ECF'
 #   come back in the url
 # - Landesverband has the same behavior as kategorie
 MY_PARAMS = {
-    'startdate': '01.01.2022',
-    'enddate': '01.04.2022',
+    'startdate': '15.02.2022',
+    'enddate': '15.05.2022',
     'umkreis': '20',  # preselections: 20, 50, 100, 200, 400
-    'plz': '63263',
+    'plz': '13187',
     'go': 'Termine+suchen',
-    'art': '-1',
+    'art': '1',
     'lv': '-1',
     # 'titel': '',
     # 'tid': '',
@@ -254,8 +254,9 @@ def results_to_ical(result_list, write_file=False):
 
     for e in result_list:
         event = create_event(e)
-        cal.add_component(event)
-        event_added = True
+        if event is not None:
+            cal.add_component(event)
+            event_added = True
 
     if not event_added:
         return EMPTY_CALENDAR_FILE
@@ -269,4 +270,4 @@ def results_to_ical(result_list, write_file=False):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    results_to_ical(get_rtfs(params=MY_PARAMS, local=True), write_file=True)
+    results_to_ical(get_rtfs(params=MY_PARAMS, local=False), write_file=True)

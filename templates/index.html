@@ -20,7 +20,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="static/rtfcal.css" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='rtfcal.css') }}" rel="stylesheet"/>
     {% endblock %}
 </head>
 <body>
@@ -31,7 +31,7 @@
     <div id="title"><h1>RTFCal: RTF Termine als Kalender-Import</h1></div>
 
     <div id="image">
-        <img src="static/images/rtfcal.png" alt="Bildschirmfoto" decoding="async"/>
+        <img src="{{ url_for('static', filename='rtfcal.png') }}" alt="Bildschirmfoto" decoding="async"/>
     </div>
 
     <div id="intro">
@@ -44,7 +44,7 @@
     </div>
 
     {% for e in errors %}
-        {{ e }}
+        <div class="error">{{ e }}</div>
     {% endfor %}
 
     <div id="param_form">

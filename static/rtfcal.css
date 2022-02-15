@@ -14,3 +14,5 @@ a {
     margin: 10px;
     width: 820px;
 }
+
+div.error { color: red }
