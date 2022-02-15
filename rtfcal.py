@@ -30,9 +30,9 @@ EMPTY_CALENDAR_FILE = 'ECF'
 # - Landesverband has the same behavior as kategorie
 MY_PARAMS = {
     'startdate': '15.02.2022',
-    'enddate': '15.05.2022',
+    'enddate': '31.05.2022',
     'umkreis': '20',  # preselections: 20, 50, 100, 200, 400
-    'plz': '13187',
+    'plz': '',
     'go': 'Termine+suchen',
     'art': '1',
     'lv': '-1',
@@ -82,7 +82,12 @@ def get_date_and_distance(cell):
         # We make all events all-day events, because the actual time is not contained in Rad-Net's calendar
         startdate = parsed_startdate.date()
         enddate = startdate + timedelta(days=1)
-    dist_from_home = cell.contents[2][1:-1] if len(cell.contents) > 1 else None
+    try:
+        # dist_from_home attribute is sometimes "<i>Wintertauglich</i>" for Permanente...
+        dist_from_home = str(cell.contents[2])[1:-1] if len(cell.contents) > 1 else None
+    except TypeError:
+        logger.error('TypeError: ' + str(cell.contents))
+        dist_from_home = 'xxx km'
     return startdate, enddate, dist_from_home
 
 
