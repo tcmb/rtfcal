@@ -77,7 +77,7 @@ def index():
         'start_date': today.strftime('%d.%m.%Y'),
         'end_date': three_months.strftime('%d.%m.%Y')
     }
-    logger.info('Neutral: Served the homepage.')
+    logger.debug('Served the homepage.')
     return render_template('index.html', **ctx)
 
 
@@ -95,8 +95,7 @@ def search():
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
     response = make_response(ical)
-    cd = 'attachment; filename=rtfcal.ics'
-    response.headers['Content-Disposition'] = cd
+    response.headers['Content-Disposition'] = 'attachment; filename=rtfcal.ics'
     response.mimetype = 'text/calendar'
 
     logger.debug('Success: Served an ics download.')
