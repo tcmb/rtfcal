@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, request, make_response, abort
-from rtfcal import get_rtfs, results_to_ical, get_default_params, ZIP_CODE_PATTERN
+from rtfcal import get_rtfs, results_to_ical, get_default_params, ZIP_CODE_PATTERN, EMPTY_CALENDAR_FILE
 from dateparser import parse
 from datetime import date, timedelta
 import logging
@@ -94,11 +94,14 @@ def search():
     logger.info('Getting results for params %s' % search_params.items())
     ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
 
-    response = make_response(ical)
-    response.headers['Content-Disposition'] = 'attachment; filename=rtfcal.ics'
-    response.mimetype = 'text/calendar'
-
-    logger.debug('Success: Served an ics download.')
+    if ical != EMPTY_CALENDAR_FILE:
+        response = make_response(ical)
+        response.headers['Content-Disposition'] = 'attachment; filename=rtfcal.ics'
+        response.mimetype = 'text/calendar'
+        logger.debug('Success: Served an ics download.')
+    else:
+        ctx = {'errors': ['Keine Events gefunden, oder nur Permanente']}
+        response = render_template('index.html', **ctx)
 
     return response
 

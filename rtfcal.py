@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 URL_SCHEME = 'https'
 URL_HOSTNAME = 'breitensport.rad-net.de'
 BASE_URL = 'http://breitensport.rad-net.de/breitensportkalender'
+EMPTY_CALENDAR_FILE = 'ECF'
 
 #  Rad-net's handling of default params:
 # - rad-net requires none of the form parameters and happily searches without any parameters
@@ -73,9 +74,14 @@ def get_default_params():
 
 def get_date_and_distance(cell):
     day_and_date = cell.contents[0]
-    # We make all events all-day events, because the actual time is not contained in Rad-Net's calendar
-    startdate = parse(day_and_date, languages=['de']).date()
-    enddate = startdate + timedelta(days=1)
+    parsed_startdate = parse(day_and_date, languages=['de'])
+    # Will be None if the event is a Permanente
+    if parsed_startdate is None:
+        startdate = enddate = None
+    else:
+        # We make all events all-day events, because the actual time is not contained in Rad-Net's calendar
+        startdate = parsed_startdate.date()
+        enddate = startdate + timedelta(days=1)
     dist_from_home = cell.contents[2][1:-1] if len(cell.contents) > 1 else None
     return startdate, enddate, dist_from_home
 
@@ -141,6 +147,10 @@ def create_event(e):
     rtf_cells = e.find_all('div', class_='zelle')
 
     startdate, enddate, dist_from_home = get_date_and_distance(rtf_cells[1])
+
+    # If it's a Permanente it doesn't make sense to create an event for it
+    if startdate is None or enddate is None:
+        return None
 
     rtf_attributes = {
         'rtf_type': rtf_cells[0].find('div', class_='tooltip').string,
@@ -213,7 +223,7 @@ def get_rtfs(lstart=None, results=None, params=None, local=False):
     logger.debug("getting rtfs with lstart %s, params %s and %s previous results" % (lstart, params, len(results)))
 
     if local:
-        with open("/Users/flo/code/rtfcal/Termine02.html") as i:
+        with open("/Users/flo/code/rtfcal/permanente.html") as i:
             html = i.read()
     else:
         html = get(BASE_URL, headers=HEADERS, params=params).content
@@ -238,12 +248,17 @@ def results_to_ical(result_list, write_file=False):
     logger.debug("Transforming %s results to iCal format" % len(result_list))
 
     cal = create_calendar()
+    event_added = False
 
     logger.debug("Got %s results:\n%s" % (len(result_list), result_list))
 
     for e in result_list:
         event = create_event(e)
         cal.add_component(event)
+        event_added = True
+
+    if not event_added:
+        return EMPTY_CALENDAR_FILE
 
     if write_file:
         with open('rtfcal.ics', 'w') as cal_file:
@@ -254,4 +269,4 @@ def results_to_ical(result_list, write_file=False):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    results_to_ical(get_rtfs(params=MY_PARAMS, local=False), write_file=True)
+    results_to_ical(get_rtfs(params=MY_PARAMS, local=True), write_file=True)

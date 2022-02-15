@@ -43,6 +43,10 @@
         </p>
     </div>
 
+    {% for e in errors %}
+        {{ e }}
+    {% endfor %}
+
     <div id="param_form">
         <h2>Suchoptionen</h2>
         <form action="/search/" method="post">
