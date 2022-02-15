@@ -69,7 +69,7 @@ def validate_search_params(params):
     return default_params
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     today = date.today()
     three_months = today + timedelta(days=90)
@@ -77,33 +77,28 @@ def index():
         'start_date': today.strftime('%d.%m.%Y'),
         'end_date': three_months.strftime('%d.%m.%Y')
     }
-    logger.debug('Served the homepage.')
+
+    if request.method == 'POST':
+        search_params = None
+        try:
+            search_params = get_search_params(request)
+            search_params = validate_search_params(search_params)
+        except (KeyError, ValueError, AssertionError) as e:
+            # Defo the user's fault
+            logger.info(u'Failure: Validation error causing 400 response: %s' % e)
+            abort(400, str(e))
+        logger.info('Getting results for params %s' % search_params.items())
+        ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
+
+        if ical != EMPTY_CALENDAR_FILE:
+            response = make_response(ical)
+            response.headers['Content-Disposition'] = 'attachment; filename=rtfcal.ics'
+            response.mimetype = 'text/calendar'
+            return response
+        else:
+            ctx['errors'] = ['Keine Events gefunden, oder nur Permanente']
+
     return render_template('index.html', **ctx)
-
-
-@app.route('/search/', methods=['POST'])
-def search():
-    search_params = None
-    try:
-        search_params = get_search_params(request)
-        search_params = validate_search_params(search_params)
-    except (KeyError, ValueError, AssertionError) as e:
-        # Defo the user's fault
-        logger.info(u'Failure: Validation error causing 400 response: %s' % e)
-        abort(400, str(e))
-    logger.info('Getting results for params %s' % search_params.items())
-    ical = results_to_ical(get_rtfs(params=search_params), write_file=False)
-
-    if ical != EMPTY_CALENDAR_FILE:
-        response = make_response(ical)
-        response.headers['Content-Disposition'] = 'attachment; filename=rtfcal.ics'
-        response.mimetype = 'text/calendar'
-        logger.debug('Success: Served an ics download.')
-    else:
-        ctx = {'errors': ['Keine Events gefunden, oder nur Permanente']}
-        response = render_template('index.html', **ctx)
-
-    return response
 
 
 @app.route('/impressum', methods=['GET'])
